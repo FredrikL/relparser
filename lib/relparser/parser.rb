@@ -11,23 +11,27 @@ module RelParser
     private
 
     def parse_regular name
-      parts = name.match(/^(.*)\.S(\d*)E(\d*).*$/).captures
-      rel = TvRelease.new
-      rel.name = parts.first.gsub("."," ")
-      rel.season = parts[1]
-      rel.episode = parts[2]
-      rel
+      parts = name.match(/^(.*)\.S(\d*)E(\d*).*-(.*)$/).captures
+      parts.first.gsub!(".", " ")
+
+      to_rel parts, name
     end
 
     def parse_fov name
-      parts = name.match(/^(.*)\.(\d*)x(\d*).*$/).captures
+      parts = name.match(/^(.*)\.(\d*)x(\d*).*-(.*)$/).captures
+      parts.first.gsub!("_"," ")
 
+      to_rel parts, name
+    end
+
+    def to_rel parts, name
       rel = TvRelease.new
-      rel.name = parts.first.gsub("_"," ")
-      rel.season = parts[1]
-      rel.episode = parts[2]
+      rel.name = parts[0]
+      rel.season = parts[1].to_i
+      rel.episode = parts[2].to_i
+      rel.by = parts.last
+      rel.full_name = name
       rel
-
     end
   end
 end
